@@ -1,0 +1,12 @@
+{
+  "name": "mowscript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "pegjs -o parser.js index.pegjs&&node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
