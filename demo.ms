@@ -4,3 +4,4 @@ def target = "hello world"
 def isOk = false
 def isNil = nil
 def isUnit = unit
+def c = a

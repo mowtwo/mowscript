@@ -241,6 +241,9 @@ function peg$parse(input, options) {
       peg$c61 = peg$classExpectation([["\0", "\x1F"], "\"", "\\"], true, false),
       peg$c62 = /^[0-9a-f]/i,
       peg$c63 = peg$classExpectation([["0", "9"], ["a", "f"]], false, true),
+      peg$c64 = function(value) {
+          return "$:"+value
+      },
 
       peg$currPos          = 0,
       peg$savedPos         = 0,
@@ -609,6 +612,9 @@ function peg$parse(input, options) {
           s0 = peg$parseUnitValue();
           if (s0 === peg$FAILED) {
             s0 = peg$parseStringValue();
+            if (s0 === peg$FAILED) {
+              s0 = peg$parseRefConst();
+            }
           }
         }
       }
@@ -1083,6 +1089,20 @@ function peg$parse(input, options) {
       s0 = peg$FAILED;
       if (peg$silentFails === 0) { peg$fail(peg$c63); }
     }
+
+    return s0;
+  }
+
+  function peg$parseRefConst() {
+    var s0, s1;
+
+    s0 = peg$currPos;
+    s1 = peg$parseVariableName();
+    if (s1 !== peg$FAILED) {
+      peg$savedPos = s0;
+      s1 = peg$c64(s1);
+    }
+    s0 = s1;
 
     return s0;
   }

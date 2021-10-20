@@ -56,6 +56,7 @@ Value
 / NilValue
 / UnitValue
 / StringValue
+/ RefConst
 
 NumberValue
 = sign:SignBit? intValue:[0-9]+ floatValue:FloatNumber?{
@@ -137,3 +138,7 @@ Escape
 HEXDIG
 = [0-9a-f]i
 
+RefConst 
+= value:VariableName {
+    return "$:"+value
+}

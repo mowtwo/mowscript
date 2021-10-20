@@ -3,13 +3,19 @@ const fs = require('fs')
 const path = require('path')
 
 const codes = fs.readFileSync(path.join(__dirname, 'demo.ms'), { encoding: 'utf-8' })
-const codeLines = codes.split(/[\r\n]/).filter(item => item != '').map(item => item.trim()).map(item => item.replace(/\s+/, ' '))
+const codeLines = codes.split(/[\r\n]/).filter(item => item != '').map(item => item.trim()).map(item => item.replace(/\s+/g, ' '))
+
+const scopeSave = {}
 
 const result = codeLines.map(item => {
     try {
         const ast = parser.parse(item)
         if (ast.type == 'defineVariable') {
-            return `const ${ast.variableName} = ${ast.variableValue};`
+            scopeSave[ast.variableName] = ast.variableValue
+            if (ast.variableValue.indexOf('$:') == 0) {
+                scopeSave[ast.variableName] = scopeSave[ast.variableValue.replace('$:','')]
+            }
+            return `const ${ast.variableName} = ${scopeSave[ast.variableName]};`
         } else {
             return '// no output'
         }
@@ -19,4 +25,12 @@ const result = codeLines.map(item => {
     }
 })
 
-fs.writeFileSync(path.join(__dirname, 'demo.out.js'), result.join('\n'), { encoding: 'utf-8' })
+const withScope = (codes)=>{
+    return `
+        ;(function() {
+            ${codes}
+        })()
+    `.trim().replace(/\s+/g,' ')
+}
+
+fs.writeFileSync(path.join(__dirname, 'demo.out.js'), withScope(result.join('\n')), { encoding: 'utf-8' })
